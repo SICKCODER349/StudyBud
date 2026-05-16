@@ -1,0 +1,22 @@
+{% extends 'main.html' %}    <!-- ← 'Main.html' should be lowercase -->
+
+{% block content %}
+
+<div>
+    <form method="POST" action="">
+        {% csrf_token %}
+
+        <label>Username:</label>
+        <input type="text" name="username" placeholder="Enter Username" />
+        <!-- ← 'Username' → 'username' -->
+        
+        <label>Password:</label>
+        <input type="password" name="password" placeholder="Enter Password" />
+        <!-- ← 'Password' → 'password' (both type and name) -->
+        
+        <input type="submit" value="Login" />
+    </form>
+</div>
+
+{% endblock content %}    <!-- ← was missing -->
+
