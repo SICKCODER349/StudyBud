@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Room, Topic 
 from .forms import RoomForm
@@ -12,12 +13,13 @@ from .forms import RoomForm
 
 
 def LoginPage(request):
+    page = 'login'
     
     if request.user.is_authenticated:
         return redirect('home')
     
     if request.method == "POST":
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
         
         try:
@@ -34,13 +36,29 @@ def LoginPage(request):
             messages.error(request,"username or password does not exit")
     
     
-    context ={}
+    context ={'page': page}
     return render(request,'base/login_register.html', context)
 
 def logoutUser(request):
     logout(request)
     return redirect('home')
 
+def registerPage(request):
+    form = UserCreationForm()
+    
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request,"an error occcured during registration")
+        
+    return render(request,'base/login_register.html', {'form': form} )
+ 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     
